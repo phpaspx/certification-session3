@@ -1,0 +1,43 @@
+config:
+  target: "https://api.todoist.com" 
+  phases:
+  - duration: 1
+    arrivalRate: 1
+    name: nameX     
+  defaults:
+    headers:
+     Authorization: Bearer 4eec1ae7f5d5f34459680fecc394cdd86415f04d
+     Content-type: application/json
+     X-Requested-Id: $(uuidgen)     
+  ##processor: "./myProcessor.js"
+scenarios:
+  - flow:
+      - get:   
+         url: "/rest/v1/tasks"
+      - post:
+         url: "/rest/v1/tasks"
+         json:
+          content: "Task do homework 2"
+          due_string: "tomorrow at 12:00"
+          due_lang: "en"
+          priority: 4
+         capture:
+          json: "$.id"
+          as: "id"
+      - log: "Current demo task id is {{ id }}"   
+      - get:
+         url: "/rest/v1/tasks/{{ id }}"
+      - post:
+         url: "/rest/v1/tasks/{{ id }}"
+         json:
+           content: "Update task"
+           due_string: "today at 12:00"
+           due_lang: "en"
+           priority: 3  
+      - post:
+         url: "/rest/v1/tasks/{{ id }}/close"         
+      - post:
+         url: "/rest/v1/tasks/{{ id }}/reopen"           
+      - delete:
+         url: "/rest/v1/tasks/{{ id }}"      
+# for more information: 
